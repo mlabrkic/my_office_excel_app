@@ -29,34 +29,46 @@ Sub TabPress()
 End Sub
 
 
-Private Sub Worksheet_SelectionChange(ByVal Target As Excel.Range)
-  Dim isect1 As Range
-  Dim isect2 As Range
+Private Sub Worksheet_SelectionChange(ByVal Target As Range)
+' date: 2023-06M-27 10:45:32
+'https:/learn.microsoft.com/en-us/office/vba/api/excel.worksheet.selectionchange
+'https://learn.microsoft.com/en-us/office/vba/api/excel.application.intersect
+'https://learn.microsoft.com/en-us/office/vba/api/excel.application.selection
 
-  Set isect1 = Application.Intersect(Target, Range("B25"))   ' UR primar
-  Set isect2 = Application.Intersect(Target, Range("B32"))   ' UR backup
+  ' Dim myRange1 As Range, myRange2 As Range
+  Dim mySelection As Range
+  Dim isect1 As Range, isect2 As Range
 
-  ' UR primar:
-  If Not isect1 Is Nothing Then
-    ComboBox1.Visible = True
+  'Set the range
+  ' Set myRange1 = Range("B25")  ' UR primar
+  ' Set myRange2 = Range("B32")  ' UR backup
+
+  'Get the cell (or range) that the user selected
+  Set mySelection = Selection
+
+  ' Set isect1 = Application.Intersect(myRange1, mySelection)  ' UR primar
+  Set isect1 = Application.Intersect(Range("B25"), mySelection)  ' UR primar, myRange1
+  Set isect2 = Application.Intersect(Range("B32"), mySelection)  ' UR backup, myRange2
+
+  'Check if the selection is inside the range "myRange1".
+  If Not (isect1 Is Nothing) Then
+    'Selection IS inside the range.
+'    MsgBox "Selection is inside the test range."
     ComboBox1.Activate
-  Else
-    ComboBox1.Visible = False
   End If
 
-  ' UR backup:
-  If Not isect2 Is Nothing Then
-    ComboBox2.Visible = True
+  'Check if the selection is inside the range "myRange2".
+  If Not (isect2 Is Nothing) Then
+    'Selection IS inside the range.
     ComboBox2.Activate
-  Else
-    ComboBox2.Visible = False
   End If
-
-  ComboBox1.Visible = True
-  ComboBox2.Visible = True
 
   Set isect1 = Nothing
   Set isect2 = Nothing
+
+  Set mySelection = Nothing
+  ' Set myRange1 = Nothing
+  ' Set myRange2 = Nothing
 
 End Sub
 
