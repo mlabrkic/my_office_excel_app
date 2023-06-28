@@ -317,79 +317,81 @@ Function Copy_only_uredjaj(i)
 ' CTRL + SHIFT + L (small L)
 
 ' https://learn.microsoft.com/en-us/office/vba/api/excel.range.autofilter
+' https://learn.microsoft.com/en-us/office/vba/api/excel.application.range
 
-  Dim CalcMode As Long
-  Dim ViewMode As Long
-  Dim FilterCriteria As String
-  Dim CCount As Long
+' ------------------------------------------------------------
+' https://learn.microsoft.com/en-us/office/vba/api/excel.range(object)
 
-  Dim My_Range As Range
+' https://learn.microsoft.com/en-us/office/vba/api/excel.range.copy
+' https://learn.microsoft.com/en-us/office/vba/api/excel.range.pastespecial
 
-  Worksheets("MPLS").Activate
-  Range("J2").Value = Worksheets("RADNA").Cells(25 + i, 2).Value
+  Dim wbBook As Workbook
+  Dim wsSource As Worksheet
+  Dim wsDestin As Worksheet
 
-  ' Note: This function use the function LastRow
-  Set My_Range = Range("A5:J" & FindLastRow())
-  My_Range.Parent.Select
+  Dim rnSource As Range
+  Dim rnDestin As Range
 
-  If ActiveWorkbook.ProtectStructure = True Or _
-      My_Range.Parent.ProtectContents = True Then
-      MsgBox "Sorry, not working when the workbook or worksheet is protected", _
-              vbOKOnly, "Copy to new worksheet"
-      Exit Function
-  End If
+  Dim rnMyRange As Range
+  Dim lCount As Long
 
-  'Change ScreenUpdating, Calculation, EnableEvents, ....
-  With Application
-      CalcMode = .Calculation
-      .Calculation = xlCalculationManual
-      .ScreenUpdating = False
-      .EnableEvents = False
+  'Initialize the Excel objects
+  Set wbBook = ThisWorkbook
+
+  With wbBook
+    Set wsSource = .Worksheets("MPLS")
+    Set wsDestin = .Worksheets("RADNA")
   End With
-  ViewMode = ActiveWindow.View
-  ActiveWindow.View = xlNormalView
-  ActiveSheet.DisplayPageBreaks = False
 
-  'Firstly, remove the AutoFilter
-  My_Range.Parent.AutoFilterMode = False
+  wsSource.Range("J2").Value = wsDestin.Range("A" & (25 + i), 2).Value
 
-  My_Range.AutoFilter Field:=10, Criteria1:="=" & Range("J2").Value
+  'Set the destination
+  With wsDestin
+    ' Set rnDestin = .Cells(25 + i, 1)
+    Set rnDestin = .Range("A" & (25 + i))
+  End With
 
-  ''If you want to filter on a Inputbox value use this
-  'FilterCriteria = InputBox("What text do you want to filter on?", _
-    '                              "Enter the filter item.")
-  'My_Range.AutoFilter Field:=1, Criteria1:="=" & FilterCriteria
+  ' Note: This function use the function FindLastRow
+  Set rnMyRange = wsSource.Range("A5:J" & FindLastRow())
 
-  'Check if there are not more then 8192 areas(limit of areas that Excel can copy)
-  CCount = 0
-  On Error Resume Next
-  CCount = My_Range.Columns(1).SpecialCells(xlCellTypeVisible).Areas(1).Cells.Count
-  On Error GoTo 0
+  lCount = rnMyRange.Columns(1).SpecialCells(xlCellTypeVisible).Cells.Count
 
-  If CCount = 0 Then
-      MsgBox "There are more than 8192 areas:" _
-            & vbNewLine & "It is not possible to copy the visible data." _
-            & vbNewLine & "Tip: Sort your data before you use this macro.", _
-              vbOKOnly, "Copy to worksheet"
+  ' Following tests if any cells (other than column header) are visible _
+  ' in the AutoFilter.Range
+  If lCount > 1 Then
+    'Firstly, remove the AutoFilter
+    rnMyRange.Parent.AutoFilterMode = False
+
+    rnMyRange.AutoFilter Field:=10, Criteria1:="=" & wsSource.Range("J2").Value
+
+    ' rnMyRange.Parent.AutoFilter.Range.Copy
+    Set rnSource = rnMyRange.Parent.AutoFilter.Range
+
+    'Copy/paste the visible data to the new worksheet
+    rnSource.Copy
+    rnDestin.PasteSpecial xlPasteValues
   Else
-      'Copy/paste the visible data to the new worksheet
-      My_Range.Parent.AutoFilter.Range.Copy
-
-      Worksheets("RADNA").Activate
-      Cells(25 + i, 1).PasteSpecial xlPasteValues
-      Cells(26 + i, 2).Select
+    MsgBox "No visible data to copy"
   End If
 
-  'Close AutoFilter
-  My_Range.Parent.AutoFilterMode = False
+  wsDestin.Range("B" & (26 + i)).Select
 
-  Set My_Range = Nothing
+  ' Remove the AutoFilter
+  rnMyRange.Parent.AutoFilterMode = False
+
+  Set rnMyRange = Nothing
+  Set rnSource = Nothing
+  Set rnDestin = Nothing
+
+  Set wsSource = Nothing
+  Set wsDestin = Nothing
+  Set wbBook = Nothing
 
 End Function
 
 
-Sub Copy_only_uredjaj_malo_S_L()
-Attribute Copy_only_uredjaj_malo_S_L.VB_ProcData.VB_Invoke_Func = "L\n14"
+Sub No_02_Copy_only_uredjaj_malo_S_L()
+Attribute No_02_Copy_only_uredjaj_malo_S_L.VB_ProcData.VB_Invoke_Func = "L\n14"
   ' date: 2023-05M-09  by mlabrkic
   ' CTRL + SHIFT + l (lowercase letter L)
 
