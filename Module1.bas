@@ -300,15 +300,20 @@ Public Function GetFirstNumberLoc(ByVal s As String) As Integer
 End Function
 
 
-Function FindLastRow() As Long
+' Function FindLastRow() As Long
+Function FindLastRow(ByVal wb As String, ByVal ws As String) As Long
   ' Function Copy_only_uredjaj(i)
   ' https://stackoverflow.com/questions/43631926/lastrow-and-excel-table
 
   ' Gives you the last cell with data in the specified row
   ' Will not work correctly if the last row is hidden
 
-  FindLastRow = ActiveSheet.Cells(Rows.Count, 1).End(xlUp).Row
+  ' Immediate Window:  ?ActiveSheet.Cells(Rows.Count, 1).End(xlUp).Row
+  ' iLastR = ThisWorkbook.Worksheets("MPLS").Range("A" & Rows.Count).End(xlUp).Row
+  ' Worksheets("MPLS").Range("B" & (iLastR +1 )).Select
 
+  ' FindLastRow = ActiveSheet.Cells(Rows.Count, 1).End(xlUp).Row
+  FindLastRow = Workbooks(wb).Worksheets(ws).Cells(Rows.Count, 2).End(xlUp).Row
 End Function
 
 
@@ -343,7 +348,7 @@ Function Copy_only_uredjaj(i)
     Set wsDestin = .Worksheets("RADNA")
   End With
 
-  wsSource.Range("J2").Value = wsDestin.Range("A" & (25 + i), 2).Value
+  wsSource.Range("J2").Value = wsDestin.Range("B" & (25 + i)).Value
 
   'Set the destination
   With wsDestin
@@ -352,7 +357,7 @@ Function Copy_only_uredjaj(i)
   End With
 
   ' Note: This function use the function FindLastRow
-  Set rnMyRange = wsSource.Range("A5:J" & FindLastRow())
+  Set rnMyRange = wsSource.Range("A5:J" & FindLastRow("Excel_TR_radna.xlsm", "MPLS"))
 
   lCount = rnMyRange.Columns(1).SpecialCells(xlCellTypeVisible).Cells.Count
 
@@ -1263,10 +1268,10 @@ Attribute No_06_Kopiraj_u_MP_REPORT_R.VB_ProcData.VB_Invoke_Func = "r\n14"
 ' CTRL + r
 
 '    https://stackoverflow.com/questions/19351832/copy-from-one-workbook-and-paste-into-another
-  Dim x As Workbook
+  Dim wbMP As Workbook
   Dim sFolder_MyDoc_Trosk As String
   Dim sMP_report As String
-  Dim iRow As Integer
+  Dim iNewRow As Integer
   Dim sVendor As String, sPopis_UPE_kod_KOR As String
   Dim sYear As String
   Dim sNetworkDrive As String
@@ -1304,27 +1309,28 @@ Attribute No_06_Kopiraj_u_MP_REPORT_R.VB_ProcData.VB_Invoke_Func = "r\n14"
       End If
   End If
 
-    '  \\...\R1\UREDJAJI\MP REPORT\2019\MP_report_UR_2019.xlsx
-    sMP_report = "MP_report_UR_" & sYear & ".xlsx"
+  '  \\...\R1\UREDJAJI\MP REPORT\2019\MP_report_UR_2019.xlsx
+  sMP_report = "MP_report_UR_" & sYear & ".xlsx"
 
   '## Open workbook first:
   sNetworkDrive = Worksheets("POPISI").Range("J2").Value
-  Set x = Workbooks.Open(sNetworkDrive & "\URE" & ChrW(272) & "AJI\MP_REPORT\" & sYear & "\" & sMP_report) ' Croatian character
+  Set wbMP = Workbooks.Open(sNetworkDrive & "\URE" & ChrW(272) & "AJI\MP_REPORT\" & sYear & "\" & sMP_report) ' Croatian character
 
   Workbooks(sMP_report).Activate
 
   ' No_01: Select last row:
-  With Application.WorksheetFunction
-      Workbooks(sMP_report).Sheets("MP_REPORT_UR").Cells(Rows.Count, 2).End(xlUp).Offset(1, 0).Select
-  End With
+  ' Workbooks(sMP_report).Worksheets("MP_REPORT_UR").Rows("B" & Rows.Count).End(xlUp).Offset(1, 0).Select
+  iNewRow = FindLastRow(sMP_report, "MP_REPORT_UR") + 1
+  ' ActiveWorkbook.Worksheets("MP_REPORT_UR").Rows("B" & (iNewRow - 1)).Offset(1, 0).Select
+  ActiveWorkbook.Worksheets("MP_REPORT_UR").Range("B" & iNewRow).Select
 
-'  Workbooks("Excel_TR_radna.xlsm").Sheets("MP_REPORT").Range("B2:K2").Copy
+'  Workbooks("Excel_TR_radna.xlsm").Worksheets("MP_REPORT").Range("B2:K2").Copy
   ThisWorkbook.Sheets("MP_REPORT").Range("B2:K2").Copy
 
   ActiveCell.PasteSpecial xlPasteValues
 
 '  ActiveWorkbook.Save
-  Set x = Nothing
+  Set wbMP = Nothing
 
 End Sub
 
