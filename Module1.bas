@@ -1004,6 +1004,7 @@ Attribute No_05_Multiple_find_and_replace_D.VB_ProcData.VB_Invoke_Func = "d\n14"
 
   ' Drugi link (Backup, SLA, ...)
   Dim sSLA As String
+  Dim sBroj_2_kartice As String
   Dim sUR_2_kategorija As String, sUR_2_lokacija As String, sUR_2_port As String, sUR_2_vendor As String
   Dim sUR_2_ID As String
   Dim sSAP_2_sifra As String, sSAP_2_naziv As String
@@ -1170,6 +1171,8 @@ Attribute No_05_Multiple_find_and_replace_D.VB_ProcData.VB_Invoke_Func = "d\n14"
 ' ----------------------------------------------------------
   ' UREDJAJ 2 (drugi link):
   sSLA = Worksheets("RADNA").Range("B30").Value
+  sBroj_2_kartice = Worksheets("RADNA").Range("C3").Value
+  
   If (sSLA <> "") Then  ' SLA, Backup
       ' sBroj_2_kartice = Worksheets("RADNA").Range("C3").value
       sUR_2_vendor = Worksheets("RADNA").Range("E33").Value
@@ -1187,7 +1190,7 @@ Attribute No_05_Multiple_find_and_replace_D.VB_ProcData.VB_Invoke_Func = "d\n14"
           sSAP_2_naziv = Worksheets(sUR_2_vendor).Cells(10, 2).Value & vbCr & Worksheets(sUR_2_vendor).Cells(10, 3).Value
       End If
 
-      ' WordDoc.Content.Find.Execute FindText:="#Broj_2_kartice", ReplaceWith:=sBroj_2_kartice, MatchWholeWord:=True, Replace:=wdReplaceAll, Wrap:=wdFindContinue
+      WordDoc.Content.Find.Execute FindText:="#Broj_2_kartice", ReplaceWith:=sBroj_2_kartice, MatchWholeWord:=True, Replace:=wdReplaceAll, Wrap:=wdFindContinue
       WordDoc.Content.Find.Execute FindText:="#SAP_2_sifra", ReplaceWith:=sSAP_2_sifra, MatchWholeWord:=True, Replace:=wdReplaceOne, Wrap:=wdFindContinue
       WordDoc.Content.Find.Execute FindText:="#SAP_2_naziv", ReplaceWith:=sSAP_2_naziv, MatchWholeWord:=True, Replace:=wdReplaceOne, Wrap:=wdFindContinue
   End If
