@@ -871,17 +871,15 @@ Sub No_04_B_INV_UI_U()
 Attribute No_04_B_INV_UI_U.VB_ProcData.VB_Invoke_Func = "u\n14"
 ' Macro 13.01.2021. by mlabrkic
 ' CTRL + u (create a UI path)
+'
+' date: 2024-02M-15 18:54:40
 
-'    Application.Run ("C:\...\yyy.exe")
   Dim x1 As Variant
-  Dim sPath As String
-  Dim sFile As String
-  Dim sUtilsFolder As String
+  Dim sUtilsFolder As String, sPath As String, sFile As String
 
   Dim sSLA As String
-
-  Dim sUR_ID As String, sPort As String
-  Dim iSLA As Integer, iPos As Integer
+  Dim sUItemplate As String, sUR_ID As String, sPort As String
+  Dim iSLA As Integer
 
   sUtilsFolder = Worksheets("POPISI").Range("J4").Value
   sPath = sUtilsFolder & "\02_INV_UI\"
@@ -894,12 +892,12 @@ Attribute No_04_B_INV_UI_U.VB_ProcData.VB_Invoke_Func = "u\n14"
       iSLA = 7
   End If
 
-'  sVendor = Worksheets("RADNA").Cells(23 + iSLA, 5).Value ' Korisnik se povezuje na router / switch vendora
+  sUItemplate = Worksheets("POPISI").Range("J3").Value
   sUR_ID = Worksheets("RADNA").Cells(26 + iSLA, 2).Value
   sPort = Worksheets("RADNA").Cells(27 + iSLA, 2).Value
 
-'    x1 = Shell("C:\...\02_INV_UI\Pokreni_inventory_02_UI.bat", vbNormalFocus)
-  x1 = Shell(sPath + sFile + " " + sUR_ID + " " + sPort, vbNormalFocus)
+  ' x1 = Shell("C:\...\02_INV_UI\Pokreni_inventory_02_UI.bat", vbNormalFocus)
+  x1 = Shell(sPath + sFile + " " + sUItemplate + " " + sUR_ID + " " + sPort, vbNormalFocus)
 
 End Sub
 
